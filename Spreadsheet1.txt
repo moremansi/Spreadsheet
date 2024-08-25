@@ -1,0 +1,79 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+// components/Spreadsheet.js
+import { useState } from 'react';
+
+const numRows = 20; // Number of rows
+const numCols = 10; // Number of columns
+
+const Spreadsheet = () => {
+  const [data, setData] = useState(Array(numRows).fill(Array(numCols).fill('')));
+
+  const handleChange = (row, col, value) => {
+    const newData = [...data];
+    newData[row][col] = value;
+    setData(newData);
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full border-collapse border border-gray-200">
+        <thead>
+          <tr>
+            {Array.from({ length: numCols }, (_, colIndex) => (
+              <th key={colIndex} className="border border-gray-200 p-2">
+                {String.fromCharCode(65 + colIndex)} {/* Column header (A, B, C...) */}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, colIndex) => (
+                <td key={colIndex} className="border border-gray-200">
+                  <input
+                    type="text"
+                    value={cell}
+                    onChange={(e) => handleChange(rowIndex, colIndex, e.target.value)}
+                    className="w-full p-2 border border-gray-300"
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default Spreadsheet;
+// pages/index.js
+import Head from 'next/head';
+import Spreadsheet from '../components/Spreadsheet';
+
+export default function Home() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <Head>
+        <title>Spreadsheet App</title>
+        <meta name="description" content="A simple spreadsheet application built with Next.js and Tailwind CSS" />
+      </Head>
+      <h1 className="text-3xl font-bold mb-4">Spreadsheet App</h1>
+      <Spreadsheet />
+    </div>
+  );
+}
